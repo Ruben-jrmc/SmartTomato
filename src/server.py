@@ -28,6 +28,7 @@ class Server:
             allow_headers=["*"],
         )
 
+        # MANDAR TRUE O FALSE DESDE APLICACION
         @self.app.post("/sthreshold")
         def set_threshold(threshold: int):
             self.threshold_inc = threshold
@@ -36,10 +37,12 @@ class Server:
         def set_class(pred_class: int):
             self.last_pred_class = pred_class
 
+        # OBENER LA ULIMA CLASE PREDICHA
         @self.app.get("/glclass")
         def get_class():
             return self.last_pred_class
 
+        # TIMEPO QUE EL TOMATE ESTUVO EN LA BANDA
         @self.app.get("/gttInBand")
         def get_ttInBand():
             return self.time_tomato_in_band
@@ -48,10 +51,12 @@ class Server:
         def set_ttInBand(time_tomato_in_band: int):
             self.time_tomato_in_band = time_tomato_in_band
 
+        # TOMATES PROCESADOS POR MINUTO
         @self.app.get("/gtbMin")
         def get_tbMin():
             return self.tomatos_by_minute
 
+        # OBTENER EL CSV CON LOS DATOS ORDENADOS POR FECHA
         @self.app.get("/journal")
         def get_journal():
             buff = io.StringIO(self.journal.journal.to_csv())
@@ -64,6 +69,7 @@ class Server:
         def set_tbMin(tomatos_by_minute: int):
             self.tomatos_by_minute = tomatos_by_minute
 
+        # IMAGEN DE LA PREDICCION
         @self.app.get("/glpImg")
         def get_image():
             if self.static_image_path:
@@ -78,6 +84,7 @@ class Server:
         def toggleBar():
             self.stm_interface.toggleBand()
 
+        # OBIENES LA TRANSMICION EN VIVO DE LO QUE VE LA CAMARA
         @self.app.get("/video")
         def video_feed():
             return StreamingResponse(self.vid_frame_generator(), media_type="multipart/x-mixed-replace; boundary=frame")
