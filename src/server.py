@@ -7,22 +7,22 @@ import io
 
 
 class Server:
-    def __init__(self,  vid_frame_generator, stm_interface, journal,
+    def __init__(self,  vid_frame_generator=None, stm_interface=None, journal=None,
                  static_image_path="static/output/photo.jpg"):
         self.app = FastAPI()
         self.last_pred_class = 0
         self.static_image_path = static_image_path
         self.threshold_inc = True
-        self.vid_frame_generator = vid_frame_generator
+        # self.vid_frame_generator = vid_frame_generator
         self.time_tomato_in_band = 0
         self.tomatos_by_minute = 0
-        self.stm_interface = stm_interface
+        # self.stm_interface = stm_interface
         self.journal = journal
 
         # Para testeo no se si en prod
         self.app.add_middleware(
             CORSMiddleware,
-            allow_origins=["http://localhost:5173"],
+            allow_origins=["*"],
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],

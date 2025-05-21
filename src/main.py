@@ -13,12 +13,11 @@ import time
 class Main():
     def __init__(self):
         self.UPLOAD_DIR = "uploads/"
-        self.cam = Camera(self.UPLOAD_DIR)
-        self.stm = STM_Interface("/dev/ttyACM0")
+        # self.cam = Camera(self.UPLOAD_DIR)
+        # self.stm = STM_Interface("/dev/ttyACM0")
         self.journal = Journal()
 
-        self.server = Server(self.cam.generate_frames,
-                             self.stm, self.journal)
+        self.server = Server()
         self.server_thread = threading.Thread(
             target=self.server.start, daemon=True)
         self.server_thread.start()
@@ -27,9 +26,7 @@ class Main():
 
     def mainLoop(self):
         while True:
-            self.listenToSignal(sigs.RX_TOMATO_IN)
-            start_tomato_in_band_time = time.time()
-            print("Tomate entra")
+            continue
             self.listenToSignal(sigs.RX_PREDICT)
             input = self.cam.takeAndSavePhoto()
             output = self.makePrediction(input)
@@ -43,14 +40,6 @@ class Main():
                 print("Tomate sale")
 
                 self.journal.addByCategory(category)
-                end_tomato_in_band_time = time.time()
-                time_tomato_in_band = end_tomato_in_band_time - start_tomato_in_band_time
-                elapsed_tomatos_per_minute = 60 / time_tomato_in_band
-                self.server.update_parameters(
-                    time_tomato_in_band=time_tomato_in_band,
-                    tomatos_by_minute=elapsed_tomatos_per_minute)
-                print(time_tomato_in_band)
-                print(elapsed_tomatos_per_minute)
             else:
                 self.stm.sendSignal(sigs.TX_UNK)
                 self.listenToSignal(sigs.RX_TOMATO_OUT)
