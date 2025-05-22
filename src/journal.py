@@ -2,6 +2,8 @@ import pandas as pd
 import os
 import src.signals as sigs
 from datetime import date
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Journal:
@@ -30,3 +32,26 @@ class Journal:
     def insertRow(self):
         today = pd.Timestamp(date.today())
         self.journal.loc[today] = [0, 0]
+
+    def getGraphic(self):
+        df = pd.read_csv("journal/journal.csv")
+        x = np.arange(len(df["Fecha"]))
+        ancho = 0.35  # Ancho de las barras
+
+        plt.figure(figsize=(8, 5))
+        plt.bar(x - ancho/2, df["Aprobados"],
+                width=ancho, label='Aprobados', color='red')
+        plt.bar(x + ancho/2, df["Desaprobados"],
+                width=ancho, label='Reprobados', color='green')
+
+        plt.xlabel('Fecha')
+        plt.ylabel('Cantidad')
+        plt.title('Comparación de Cantidad por Fecha')
+        plt.xticks(x, df["Fecha"])
+        plt.legend()
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+        plt.tight_layout()
+        plt.savefig('comparacion_ventas.png', dpi=300)
+
+        plt.show()

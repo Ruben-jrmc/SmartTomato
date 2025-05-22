@@ -13,10 +13,10 @@ class Server:
         self.last_pred_class = 0
         self.static_image_path = static_image_path
         self.threshold_inc = True
-        # self.vid_frame_generator = vid_frame_generator
+        self.vid_frame_generator = vid_frame_generator
         self.time_tomato_in_band = 0
         self.tomatos_by_minute = 0
-        # self.stm_interface = stm_interface
+        self.stm_interface = stm_interface
         self.journal = journal
 
         # Para testeo no se si en prod
@@ -59,11 +59,9 @@ class Server:
         # OBTENER EL CSV CON LOS DATOS ORDENADOS POR FECHA
         @self.app.get("/journal")
         def get_journal():
-            buff = io.StringIO(self.journal.journal.to_csv())
-            return StreamingResponse(buff, media_type="text/csv",
-                                     headers={
-                                         "Content-Disposition":
-                                         "attachment; filename=journal.csv"})
+            buff = journal.getGraphic()
+            return FileResponse(
+                    self.static_image_path, media_type="image/jpeg")
 
         @self.app.post("/stbMin")
         def set_tbMin(tomatos_by_minute: int):

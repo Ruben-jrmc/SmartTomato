@@ -13,11 +13,11 @@ import time
 class Main():
     def __init__(self):
         self.UPLOAD_DIR = "uploads/"
-        # self.cam = Camera(self.UPLOAD_DIR)
-        # self.stm = STM_Interface("/dev/ttyACM0")
+        self.cam = Camera(self.UPLOAD_DIR)
+        self.stm = STM_Interface("COM3")
         self.journal = Journal()
 
-        self.server = Server()
+        self.server = Server(self.cam.generate_frames,self.stm,self.journal)
         self.server_thread = threading.Thread(
             target=self.server.start, daemon=True)
         self.server_thread.start()
@@ -26,7 +26,6 @@ class Main():
 
     def mainLoop(self):
         while True:
-            continue
             self.listenToSignal(sigs.RX_PREDICT)
             input = self.cam.takeAndSavePhoto()
             output = self.makePrediction(input)
@@ -36,13 +35,11 @@ class Main():
                 self.server.update_parameters(last_pred_class=category)
                 self.stm.sendSignal(category)
 
-                self.listenToSignal(sigs.RX_TOMATO_OUT)
                 print("Tomate sale")
 
                 self.journal.addByCategory(category)
             else:
                 self.stm.sendSignal(sigs.TX_UNK)
-                self.listenToSignal(sigs.RX_TOMATO_OUT)
 
     def listenToSignal(self, SIGNAL):
         while self.stm.waitForTrigger() != SIGNAL:
